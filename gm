@@ -1,0 +1,8 @@
+cat > /usr/local/bin/gm <<'EOF'
+#!/bin/bash
+read -p "请输入 tinyfilemanager 默认浏览目录（默认 /dav）： " NEW_DIR
+NEW_DIR=${NEW_DIR:-/dav}
+sed -i "s|^\(\s*\$root_path\s*=\s*\).*\$|\1'$NEW_DIR';|" /var/www/html/fm.php
+echo "已修改 tinyfilemanager \$root_path 为：$NEW_DIR"
+EOF
+chmod +x /usr/local/bin/gm
