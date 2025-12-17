@@ -1,0 +1,62 @@
+server {
+    server_name wofav.eu.org;
+
+    root /WVVbit;
+    index 脱机成功.html;
+
+    charset utf-8;
+
+    location = /davv {
+        return 301 /davv/;
+    }
+
+    location /davv {
+        alias /dav/;
+        dav_methods PUT DELETE MKCOL COPY MOVE;
+        dav_ext_methods PROPFIND OPTIONS;
+        create_full_put_path on;
+        autoindex on;
+        auth_basic "WebDAV";
+        auth_basic_user_file /etc/nginx/.dav_passwd;
+    }
+
+    location = /fm.php {
+        alias /php/fm.php;
+        index fm.php;
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php-fpm.sock;
+    }
+
+    location /php {
+        root /;
+        index index.html;
+        #try_files $uri $uri/ /php/index.html =404;
+        #autoindex on;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php-fpm.sock;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    listen [::]:443 ssl;
+    ssl_certificate /etc/letsencrypt/live/wofav.eu.org/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/wofav.eu.org/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+server {
+    if ($host = wofav.eu.org) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    listen [::]:80;    
+    server_name wofav.eu.org;
+    return 404; # managed by Certbot
+
+
+}
